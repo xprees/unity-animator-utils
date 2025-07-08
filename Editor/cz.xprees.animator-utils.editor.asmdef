@@ -1,0 +1,18 @@
+{
+    "name": "cz.xprees.animator-utils.editor",
+    "rootNamespace": "Xprees.AnimatorUtils",
+    "references": [
+        "GUID:c1a828ace7a95b34a9e5bb1776236168"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

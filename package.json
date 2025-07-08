@@ -1,0 +1,17 @@
+{
+  "name": "cz.xprees.animator-utils",
+  "version": "1.0.0",
+  "displayName": "Animator Utils",
+  "description": "This package contains utilities for better UX of Unity Animator and animations.",
+  "category": "Tools",
+  "license": "Apache-2.0",
+  "keywords": [
+    "animation"
+  ],
+  "author": {
+    "name": "xprees",
+    "email": "xprees.developer@gmail.com",
+    "url": "https://xprees.com/"
+  },
+  "unity": "6000.0"
+}
