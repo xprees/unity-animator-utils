@@ -18,9 +18,16 @@ namespace Xprees.AnimatorUtils.Editor
         private UnityEditor.Editor _preview;
         private int _animationClipId;
 
+        /// This is the active instance of the AnimatorStateObjectPreview. Currently, only one instance can be active at a time.
+        public static AnimatorStateObjectPreview ActiveInstance { get; private set; }
+
+        public int ActiveTargetInstanceId => target.GetInstanceID();
+
         public override void Initialize(Object[] targets)
         {
             base.Initialize(targets);
+            // Only one instance of this preview should be active at a time. If you want to support multiple targets,
+            // change the Instance logic, too.
             if (targets.Length > 1 || Application.isPlaying) return;
 
             CacheSourceAnimationEditorFields();
@@ -30,6 +37,8 @@ namespace Xprees.AnimatorUtils.Editor
             {
                 InitializeClipPreview(clip);
             }
+
+            ActiveInstance = this;
         }
 
         private void InitializeClipPreview(AnimationClip clip)
@@ -42,6 +51,7 @@ namespace Xprees.AnimatorUtils.Editor
         {
             base.Cleanup();
             CleanupClipPreview();
+            ActiveInstance = null;
         }
 
         private void CleanupClipPreview()

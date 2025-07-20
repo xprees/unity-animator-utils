@@ -6,7 +6,10 @@
   "category": "Tools",
   "license": "Apache-2.0",
   "keywords": [
-    "animation"
+    "Editor",
+    "animation",
+    "animator",
+    "events"
   ],
   "author": {
     "name": "xprees",
