@@ -11,10 +11,12 @@ namespace Xprees.AnimatorUtils.Editor
     public class BetterAnimationEventStateBehaviourEditor : UnityEditor.Editor
     {
         private Texture2D _recordIcon;
+        private Texture2D _loadTimeIcon;
 
         private void OnEnable()
         {
             _recordIcon = EditorGUIUtility.Load("d_Animation.Record") as Texture2D;
+            _loadTimeIcon = EditorGUIUtility.Load("d_SceneViewCamera") as Texture2D;
         }
 
         public override void OnInspectorGUI()
@@ -23,10 +25,10 @@ namespace Xprees.AnimatorUtils.Editor
 
             EditorGUILayout.Space();
 
-            DrawSyncTriggerTimeButton();
+            DrawUtilButtons();
         }
 
-        private void DrawSyncTriggerTimeButton()
+        private void DrawUtilButtons()
         {
             var prevEnabled = GUI.enabled;
 
@@ -38,21 +40,32 @@ namespace Xprees.AnimatorUtils.Editor
                 && behaviour
                 && animatorState
                 && (AnimatorStateObjectPreview.ActiveInstance?.HasPreviewGUI() ?? false);
-            // Ensure the button is only enabled when not playing and the behaviour and animator state are valid.
-            if (GUILayout.Button(new GUIContent("Sync Trigger with Preview", _recordIcon)))
+            // Ensure the buttons are only enabled when not playing and the behaviour and animator state are valid.
+
+            GUILayout.BeginHorizontal();
+
+            if (GUILayout.Button(new GUIContent("Record from Preview", _recordIcon)))
             {
                 if (behaviour && animatorState)
                 {
-                    SyncPreviewTimeWithTriggerTime(behaviour, animatorState);
+                    SyncTriggerWithPreview(behaviour, animatorState);
                 }
             }
+
+            if (GUILayout.Button(new GUIContent("Show in Preview", _loadTimeIcon)))
+            {
+                if (behaviour && animatorState)
+                {
+                    SetPreviewToTriggerTime(behaviour, animatorState);
+                }
+            }
+
+            GUILayout.EndHorizontal();
 
             GUI.enabled = prevEnabled;
         }
 
-        private void SyncPreviewTimeWithTriggerTime(
-            BetterAnimationEventStateBehaviour behaviour,
-            AnimatorState animatorState)
+        private void SyncTriggerWithPreview(BetterAnimationEventStateBehaviour behaviour, AnimatorState animatorState)
         {
             var animatorStateInstanceId = animatorState.GetInstanceID();
             var preview = AnimatorStateObjectPreview.ActiveInstance;
@@ -63,9 +76,23 @@ namespace Xprees.AnimatorUtils.Editor
             }
 
             var previewTime = preview.GetCurrentPreviewNormalizedTime();
-            Undo.RecordObject(behaviour, $"{animatorState.name} - Preview Time Sync with Trigger Time");
+            Undo.RecordObject(behaviour, $"{animatorState.name} - Record Trigger Time from Preview");
             behaviour.triggerTime = previewTime;
             EditorUtility.SetDirty(behaviour);
+        }
+
+        private void SetPreviewToTriggerTime(BetterAnimationEventStateBehaviour behaviour, AnimatorState animatorState)
+        {
+            var animatorStateInstanceId = animatorState.GetInstanceID();
+            var preview = AnimatorStateObjectPreview.ActiveInstance;
+            if (preview == null || preview.ActiveTargetInstanceId != animatorStateInstanceId)
+            {
+                Debug.LogWarning($"No active {nameof(AnimatorStateObjectPreview)} found for the current state.");
+                return;
+            }
+
+            var triggerTime = behaviour.triggerTime;
+            preview.SetCurrentPreviewNormalizedTime(triggerTime);
         }
     }
 }

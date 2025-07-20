@@ -117,6 +117,21 @@ namespace Xprees.AnimatorUtils.Editor
             return (float)_cachedNormalizedTimeProperty.GetValue(timeControl);
         }
 
+        public void SetCurrentPreviewNormalizedTime(float normalizedTime)
+        {
+            if (_cachedAvatarPreviewField == null
+                || _cachedTimeControlField == null
+                || _cachedNormalizedTimeProperty == null)
+            {
+                return;
+            }
+
+            normalizedTime = Mathf.Clamp01(normalizedTime);
+            var avatarPreview = _cachedAvatarPreviewField.GetValue(_preview);
+            var timeControl = _cachedTimeControlField.GetValue(avatarPreview);
+            _cachedNormalizedTimeProperty.SetValue(timeControl, normalizedTime);
+        }
+
         /// We need to a bit of reflection magic to get the fields from the AnimationClipEditor - it's internal :)
         static void CacheSourceAnimationEditorFields()
         {
