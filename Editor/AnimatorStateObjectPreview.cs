@@ -13,6 +13,7 @@ namespace Xprees.AnimatorUtils.Editor
         private static FieldInfo _cachedAvatarPreviewField;
         private static FieldInfo _cachedTimeControlField;
         private static FieldInfo _cachedStopTimeField;
+        private static PropertyInfo _cachedNormalizedTimeProperty;
 
         private UnityEditor.Editor _preview;
         private int _animationClipId;
@@ -91,17 +92,47 @@ namespace Xprees.AnimatorUtils.Editor
             _cachedStopTimeField.SetValue(timeControl, clip.length);
         }
 
-        /// We neeed to a bit of reflection magic to get the fields from the AnimationClipEditor - it's internal :)
+        /// Returns the current normalized time of the preview animation.
+        public float GetCurrentPreviewNormalizedTime()
+        {
+            if (_cachedAvatarPreviewField == null
+                || _cachedTimeControlField == null
+                || _cachedNormalizedTimeProperty == null)
+            {
+                return 0f;
+            }
+
+            var avatarPreview = _cachedAvatarPreviewField.GetValue(_preview);
+            var timeControl = _cachedTimeControlField.GetValue(avatarPreview);
+            return (float)_cachedNormalizedTimeProperty.GetValue(timeControl);
+        }
+
+        /// We need to a bit of reflection magic to get the fields from the AnimationClipEditor - it's internal :)
         static void CacheSourceAnimationEditorFields()
         {
-            if (_cachedAvatarPreviewField != null) return;
+            if (_cachedAvatarPreviewField == null)
+            {
+                _cachedAvatarPreviewField = Type.GetType("UnityEditor.AnimationClipEditor, UnityEditor")
+                    ?.GetField("m_AvatarPreview", BindingFlags.Instance | BindingFlags.NonPublic);
+            }
 
-            _cachedAvatarPreviewField = Type.GetType("UnityEditor.AnimationClipEditor, UnityEditor")
-                ?.GetField("m_AvatarPreview", BindingFlags.Instance | BindingFlags.NonPublic);
-            _cachedTimeControlField = Type.GetType("UnityEditor.AvatarPreview, UnityEditor")
-                ?.GetField("timeControl", BindingFlags.Instance | BindingFlags.NonPublic);
-            _cachedStopTimeField = Type.GetType("UnityEditor.TimeControl, UnityEditor")
-                ?.GetField("stopTime", BindingFlags.Instance | BindingFlags.NonPublic);
+            if (_cachedTimeControlField == null)
+            {
+                _cachedTimeControlField = Type.GetType("UnityEditor.AvatarPreview, UnityEditor")
+                    ?.GetField("timeControl", BindingFlags.Instance | BindingFlags.Public);
+            }
+
+            if (_cachedStopTimeField == null)
+            {
+                _cachedStopTimeField = Type.GetType("UnityEditor.TimeControl, UnityEditor")
+                    ?.GetField("stopTime", BindingFlags.Instance | BindingFlags.Public);
+            }
+
+            if (_cachedNormalizedTimeProperty == null)
+            {
+                _cachedNormalizedTimeProperty = Type.GetType("UnityEditor.TimeControl, UnityEditor")
+                    ?.GetProperty("normalizedTime", BindingFlags.Instance | BindingFlags.Public);
+            }
         }
     }
 }
