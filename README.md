@@ -2,10 +2,15 @@
 
 ## Features
 
-- **Animator State Preview**: Quickly preview animation clips in the Animator window.
-  TODO images
-- **Better Animation Events**: Enhanced animation events with better control and usability.
-  TODO images
+### Animator State Preview
+
+Quickly preview animation clips in the Animator window. (Not available in Unity by default)
+![img.png](Documentation~/anim_state_prev.png)
+
+### Better Animation Events
+
+Enhanced animation events with better control and usability.
+![img_1.png](Documentation~/better_anim_events.png)
 
 ## Warning
 
