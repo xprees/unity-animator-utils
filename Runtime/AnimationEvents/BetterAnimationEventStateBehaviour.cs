@@ -19,36 +19,46 @@ namespace Xprees.AnimatorUtils.AnimationEvents
         private bool _eventTriggered;
         private float _prevNormalizedTime;
 
+        private BetterAnimationEventReceiver _eventReceiver;
+
         public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
-            _eventTriggered = false;
+            ResetEventTrigger();
         }
 
         public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
             var currentTime = stateInfo.normalizedTime % 1f;
 
-            if (activateOnLoop && currentTime < _prevNormalizedTime)
+            var didLooped = currentTime < _prevNormalizedTime;
+            if (activateOnLoop && didLooped)
             {
-                // Reset the event trigger when the animation loops
-                _eventTriggered = false;
+                ResetEventTrigger();
             }
 
             if (!_eventTriggered && currentTime >= triggerTime)
             {
-                NotifyReceiver(animator);
-                _eventTriggered = true;
+                TriggerEvent(animator);
             }
 
             _prevNormalizedTime = currentTime;
         }
 
+        private void TriggerEvent(Animator animator)
+        {
+            NotifyReceiver(animator);
+            _eventTriggered = true;
+        }
+
+        private void ResetEventTrigger() => _eventTriggered = false;
+
         private void NotifyReceiver(Animator animator)
         {
-            var receiver = animator.GetComponent<BetterAnimationEventReceiver>();
-            if (receiver)
+            if (!_eventReceiver) _eventReceiver = animator.GetComponent<BetterAnimationEventReceiver>();
+
+            if (_eventReceiver)
             {
-                receiver.OnAnimationEventTriggered(eventName);
+                _eventReceiver.OnAnimationEventTriggered(eventName);
                 return;
             }
 
