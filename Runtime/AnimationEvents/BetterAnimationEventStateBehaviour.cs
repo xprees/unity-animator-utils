@@ -5,7 +5,15 @@ namespace Xprees.AnimatorUtils.AnimationEvents
     /// This class is a state machine behaviour that triggers animation events at specified normalized times.
     public class BetterAnimationEventStateBehaviour : StateMachineBehaviour
     {
-        [Tooltip("If true, the event will be triggered every time the animation loops.")]
+#if UNITY_EDITOR
+        [Tooltip(
+            "Description of the animation event. This is for documentation purposes Editor-only and does not affect functionality.")]
+        [SerializeField]
+        [TextArea(1, 5)]
+        private string description;
+
+#endif
+        [Header("Trigger Settings")] [Tooltip("If true, the event will be triggered every time the animation loops.")]
         public bool activateOnLoop = false;
 
         [Header("Event")]
