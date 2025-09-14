@@ -66,7 +66,7 @@ namespace Xprees.AnimatorUtils.AnimationEvents
 
             if (_eventReceiver)
             {
-                _eventReceiver.OnAnimationEventTriggered(eventName);
+                _eventReceiver.OnAnimationEventTriggered(eventName?.Trim()); // TODO remove trim after implementing lookup of keys
                 return;
             }
 

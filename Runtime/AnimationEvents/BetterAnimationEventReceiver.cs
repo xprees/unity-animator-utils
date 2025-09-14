@@ -14,7 +14,7 @@ namespace Xprees.AnimatorUtils.AnimationEvents
         {
             // Check should be case-sensitive probably
             var matchingEvent = animationEvents
-                .Find(e => e.eventName.Equals(eventName, StringComparison.InvariantCulture));
+                .Find(e => e.eventName.Trim().Equals(eventName, StringComparison.InvariantCulture));
             matchingEvent?.onAnimationEvent?.Invoke();
         }
     }
